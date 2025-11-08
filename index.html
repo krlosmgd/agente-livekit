@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador de Agente</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background-color: #f7f7f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 90%; max-width: 600px; padding: 24px; }
+        h1 { margin-top: 0; }
+        textarea { width: 100%; min-height: 200px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; padding: 12px; font-size: 14px; margin-bottom: 16px; }
+        button { background-color: #007aff; color: white; border: none; padding: 12px 20px; border-radius: 4px; font-size: 16px; cursor: pointer; width: 100%; }
+        button:hover { background-color: #005bb5; }
+        #status { margin-top: 16px; text-align: center; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Configurador de Agente</h1>
+        <p>Escribe el "Prompt del Sistema" (contexto) para tu agente de IA.</p>
+        
+        <textarea id="system-prompt" placeholder="Ej: Eres un asistente de IA amable y conversacional. Responde de forma natural y mantén todas tus respuestas en español..."></textarea>
+        
+        <button id="save-button">Guardar Configuración</button>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const promptTextarea = document.getElementById('system-prompt');
+        const saveButton = document.getElementById('save-button');
+        const statusDiv = document.getElementById('status');
+
+        // --- 1. Cargar la configuración actual al abrir la página ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/configure');
+                const config = await response.json();
+                promptTextarea.value = config.system_prompt;
+            } catch (error) {
+                statusDiv.textContent = 'Error al cargar la configuración.';
+                statusDiv.style.color = 'red';
+            }
+        });
+
+        // --- 2. Guardar la nueva configuración al hacer clic ---
+        saveButton.addEventListener('click', async () => {
+            const promptValue = promptTextarea.value;
+
+            try {
+                const response = await fetch('/api/configure', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ system_prompt: promptValue })
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    statusDiv.textContent = '¡Configuración guardada con éxito!';
+                    statusDiv.style.color = 'green';
+                } else {
+                    statusDiv.textContent = 'Error al guardar: ' + result.message;
+                    statusDiv.style.color = 'red';
+                }
+            } catch (error) {
+                statusDiv.textContent = 'Error de red.';
+                statusDiv.style.color = 'red';
+            }
+
+            // Borrar el mensaje de estado después de 3 segundos
+            setTimeout(() => { statusDiv.textContent = ''; }, 3000);
+        });
+    </script>
+
+</body>
+</html>

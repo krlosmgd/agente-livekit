@@ -1,0 +1,14 @@
+[project]
+name = "customagentlivekit"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "livekit-agents>=1.2.18",
+    "livekit-plugins-deepgram>=1.2.18",
+    "livekit-plugins-elevenlabs>=1.2.18",
+    "livekit-plugins-openai>=1.2.18",
+    "livekit-plugins-silero>=1.2.18",
+    "python-dotenv>=1.2.1",
+]
