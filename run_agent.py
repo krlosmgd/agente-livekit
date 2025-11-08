@@ -38,7 +38,8 @@ AGENT_INSTRUCTIONS = _CONFIG.get(
 )
 
 # Speech-to-text language (e.g. "es" or "es-CO"). Can be overridden in config.json
-STT_LANGUAGE = _CONFIG.get("stt_language", "es")
+# Allow environment variable override (e.g. export STT_LANGUAGE=es-CO) before falling back to config.json or default
+STT_LANGUAGE = os.getenv("STT_LANGUAGE") or _CONFIG.get("stt_language", "es")
 
 @function_tool
 async def lookup_weather(
